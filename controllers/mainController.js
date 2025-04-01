@@ -19,7 +19,8 @@ const main_index = async (req, res) => {
         res.render('index', {
             locals,
             nextPage,
-            hasNextPage
+            hasNextPage,
+            currentRoute: '/'
         });
     } catch (err) {
         console.log(err);
@@ -31,7 +32,7 @@ const main_about = (req, res) => {
         title: 'About',
         description: 'About Page'
     }
-    res.render('about', locals);
+    res.render('about', { locals, currentRoute: '/about' });
 }
 
 const main_post = async (req, res) => { 
@@ -41,7 +42,7 @@ const main_post = async (req, res) => {
             title: post.title,
             description: 'Post Page'
         }
-        res.render('post', { locals, post });
+        res.render('post', { locals, post, currentRoute: `/post/${req.params.id}` });
     }catch(error){
         console.log(error);
     }
@@ -62,7 +63,7 @@ const main_search = async (req, res) => {
                 { body: { $regex: '.*' + searchNoSpecialChars + '.*' } }
             ]}
         );
-        res.render('search', { locals, posts });
+        res.render('search', { locals, posts, currentRoute: '/search' });
     }catch(error){
         console.log(error);
     }
