@@ -1,13 +1,54 @@
-
-const main_index = (req, res) => {
-    res.render('index');
+const Post = require('../server/model/Post');
+const main_index = async (req, res) => {
+    const locals ={
+        title: 'NodeBlog',
+        description: 'A blog built with Node.js, Express, and MongoDB',
+        posts: []
+    }
+    let perPage = 2;
+    let page = req.query.page || 1;
+    try {
+        const posts = await Post.aggregate([{ $sort: { createdAt: -1 }}])
+            .skip(perPage * page - perPage)
+            .limit(perPage)
+            .exec();
+        locals.posts = posts;
+        const count = await Post.countDocuments();
+        const nextPage = parseInt(page) + 1;
+        const hasNextPage = nextPage <= (count / perPage);
+        res.render('index', {
+            locals,
+            nextPage,
+            hasNextPage
+        });
+    } catch (err) {
+        console.log(err);
+    }
 }
 
-const main_about = (req, res) => {
-    res.render('about');
+const main_about = (req, res) => {  
+    const locals ={
+        title: 'About',
+        description: 'About Page'
+    }
+    res.render('about', locals);
+}
+
+const main_post = async (req, res) => { 
+    try{
+        const post = await Post.findOne({ _id: req.params.id });         
+        const locals = {
+            title: post.title,
+            description: 'Post Page'
+        }
+        res.render('post', { locals, post });
+    }catch(error){
+        console.log(error);
+    }
 }
 
 module.exports = {
     main_index,
-    main_about
+    main_about,
+    main_post
 }

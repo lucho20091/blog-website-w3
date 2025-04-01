@@ -2,9 +2,14 @@ require('dotenv').config();
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
 
+const connectDB = require('./server/config/db');
+
 const app = express();
+// Connect to MongoDB
+connectDB();
 
 // Template engine
+app.use(express.static('public'));
 app.use(expressLayouts);
 app.set('layout', './layouts/main');
 app.set('view engine', 'ejs');
