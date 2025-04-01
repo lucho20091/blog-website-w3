@@ -47,8 +47,29 @@ const main_post = async (req, res) => {
     }
 }
 
+const main_search = async (req, res) => {
+    try{
+        const locals = {
+            title: 'Search',
+            description: 'Search Page'
+        }
+        const searchTerm = req.body.searchTerm
+        const searchNoSpecialChars = searchTerm.replace(/[^a-zA-Z0-9 ]/g, '');
+        console.log(searchNoSpecialChars);
+        const posts = await Post.find(
+            { $or: [
+                { title: { $regex: '.*' + searchNoSpecialChars + '.*' } },
+                { body: { $regex: '.*' + searchNoSpecialChars + '.*' } }
+            ]}
+        );
+        res.render('search', { locals, posts });
+    }catch(error){
+        console.log(error);
+    }
+}
 module.exports = {
     main_index,
     main_about,
-    main_post
+    main_post,
+    main_search
 }
